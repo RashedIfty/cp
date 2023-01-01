@@ -1,0 +1,805 @@
+------------Dijksrtra----------------
+
+6 7
+1 2 1
+1 3 5
+1 4 7
+2 5 50
+3 5 20
+4 6 7
+6 5 7
+1
+5
+
+
+#include<iostream>
+#include<stdio.h>
+using namespace std;
+#define INFINITY 9999
+#define max 5
+void dijkstra(int G[max][max],int n,int startnode);
+int main()
+{
+    int G[max][max];
+    for(int i=0; i<max; i++)
+    {
+        for(int j=0; j<max; j++)
+        {
+            cin >> G[i][j];
+        }
+    }
+
+    int n=5;
+    int u=0;
+    dijkstra(G,n,u);
+    return 0;
+}
+void dijkstra(int G[max][max],int n,int startnode)
+{
+    int cost[max][max],distance[max],pred[max];
+    int visited[max],count,mindistance,nextnode,i,j;
+    for(i=0; i<n; i++)
+        for(j=0; j<n; j++)
+            if(G[i][j]==0)
+                cost[i][j]=INFINITY;
+            else
+                cost[i][j]=G[i][j];
+    for(i=0; i<n; i++)
+    {
+        distance[i]=cost[startnode][i];
+        pred[i]=startnode;
+        visited[i]=0;
+    }
+    distance[startnode]=0;
+    visited[startnode]=1;
+    count=1;
+    while(count<n-1)
+    {
+        mindistance=INFINITY;
+        for(i=0; i<n; i++)
+            if(distance[i]<mindistance&&!visited[i])
+            {
+                mindistance=distance[i];
+                nextnode=i;
+            }
+        visited[nextnode]=1;
+        for(i=0; i<n; i++)
+            if(!visited[i])
+                if(mindistance+cost[nextnode][i]<distance[i])
+                {
+                    distance[i]=mindistance+cost[nextnode][i];
+                    pred[i]=nextnode;
+                }
+        count++;
+    }
+    for(i=0; i<n; i++)
+        if(i!=startnode)
+        {
+            cout<<"\nDistance of node"<<i<<"="<<distance[i];
+            cout<<"\nPath="<<i;
+            j=i;
+            do
+            {
+                j=pred[j];
+                cout<<"<-"<<j;
+            }
+            while(j!=startnode);
+        }
+}
+
+-----------Bellman Ford----------------
+
+5 8
+0 0 1 1 1 3 3 4
+1 2 2 3 4 2 1 3
+-1 4 3 2 2 5 1 -3
+
+#include<bits/stdc++.h>
+using namespace std;
+void print(int dist[], int n)
+{
+    cout<<"Vertex Distance from Source\n";
+    for (int i = 0; i < n; ++i)
+        printf("%d \t\t %d\n", i, dist[i]);
+}
+void BellmanFord(int V, int E, int start, int E1[],int E2[],int W[])
+{
+    int dist[V];
+    for (int i = 0; i < V; i++)
+        dist[i] = INT_MAX;
+    dist[start] = 0;
+    for (int i = 1; i <= V-1; i++)
+    {
+        for (int j = 0; j < E; j++)
+        {
+            int u = E1[j];
+            int v = E2[j];
+            int weight = W[j];
+            if (dist[u] != INT_MAX && dist[u] + weight < dist[v])
+                dist[v] = dist[u] + weight;
+        }
+    }
+    for (int i = 0; i < E; i++)
+    {
+        int u = E1[i];
+        int v = E2[i];
+        int weight = W[i];
+        if (dist[u] != INT_MAX && dist[u] + weight < dist[v])
+            cout<<"Graph contains negative weight cycle";
+    }
+    print(dist, V);
+    return;
+}
+int main ()
+{
+    int v,e;
+    cin>>v>>e;
+    int E1[e+10], E2[e+10], W[e+10];
+    for(int i = 0; i<e; i++)
+    {
+        cin>>E1[i];
+    }
+    for(int i = 0; i<e; i++)
+    {
+        cin>>E2[i];
+    }
+    for(int i = 0; i<e; i++)
+    {
+        cin>>W[i];
+    }
+
+    BellmanFord(v, e, 0,E1,E2,W);
+    return 0;
+}
+
+--------Floyd Warshall------------
+
+0   5  99999 10
+99999 0   3 99999
+99999 99999 0   1
+99999 99999 99999 0
+
+#include<bits/stdc++.h>
+using namespace std;
+#define V 4
+#define INF 99999
+void printSolution(int dist[][V]);
+void floydWarshall (int graph[][V])
+{
+    int dist[V][V], i, j, k;
+    for (i = 0; i < V; i++)
+        for (j = 0; j < V; j++)
+            dist[i][j] = graph[i][j];
+    for (k = 0; k < V; k++)
+    {
+        for (i = 0; i < V; i++)
+        {
+            for (j = 0; j < V; j++)
+            {
+                if (dist[i][k] + dist[k][j] < dist[i][j])
+                    dist[i][j] = dist[i][k] + dist[k][j];
+            }
+        }
+    }
+    printSolution(dist);
+}
+
+void printSolution(int dist[][V])
+{
+    printf ("Following matrix shows the shortest distances"
+            " between every pair of vertices \n");
+    for (int i = 0; i < V; i++)
+    {
+        for (int j = 0; j < V; j++)
+        {
+            if (dist[i][j] == INF)
+                printf("%7s", "INF");
+            else
+                printf ("%7d", dist[i][j]);
+        }
+        printf("\n");
+    }
+}
+int main()
+{
+    int graph[V][V];
+    for (int i = 0; i < V; i++)
+    {
+        for (int j = 0; j < V; j++)
+        {
+            cin>>graph[i][j];
+        }
+    }
+    floydWarshall(graph);
+    return 0;
+}
+
+----------------BFS----------------------
+   9 9
+   1 2
+   1 5
+   2 3
+   2 4
+   5 6
+   5 7
+   6 9
+   6 9
+   7 8
+   6
+
+
+#include<bits/stdc++.h>
+using namespace std;
+int main()
+{
+    int n,e;
+    cin>>n>>e;
+    int visit[1010]= {0};
+    vector<int>graph[1010];
+    int u,v;
+    for(int i=0; i<e; i++)
+    {
+        cin>>u>>v;
+        graph[u].push_back(v);
+        graph[v].push_back(u); //No use if derected 
+    } //Insert as Adj List
+    for(int i=1; i<=n; i++) //Adj List Show
+    {
+        cout<<i<<"->";
+        for(int j=0; j<graph[i].size(); j++)
+            cout<<graph[i][j]<<" ";
+        cout<<endl;
+    }
+    int start;
+    cin>>start; //Start Node
+    queue<int>q;
+    q.push(start); //Push in Queue
+    visit[start]=1; 
+    while(!q.empty()) //Check Until Queue Empty
+    {
+        int x,y;
+        x=q.front();
+        cout<<x<<" ";
+        q.pop();
+        for(int i=0; i<graph[x].size(); i++)
+        {
+            y=graph[x][i];
+            if(!visit[y])
+            {
+                visit[y]=1;
+                q.push(y) ;
+            }
+        }
+    }
+}
+
+
+---------------input BFS--------------------------
+   5 5
+   .....
+   ..#.S
+   ..#..
+   D....
+   .....
+   */
+
+#include<bits/stdc++.h>
+using namespace std;
+
+int n,m;
+vector<string>grid;
+
+bool invalid(int x, int y)
+{
+    return x<n && x>=0 && y<m && y>=0 && grid[x][y] !='#';
+}
+
+
+int main()
+{
+    cin>>n>>m;
+
+    pair<int,int>s,d;
+
+    grid = vector<string>(n);
+
+    for(int i=0; i<n; i++)
+    {
+        cin>>grid[i];
+        for(int j=0; j<m; j++)
+        {
+            if(grid[i][j]=='S')
+            {
+                s.first = i;
+                s.second = j;
+            }
+            if(grid[i][j]=='D')
+            {
+                d.first = i;
+                d.second = j;
+            }
+
+        }
+    }
+
+    int level[100][100];
+    memset(level,-1,sizeof(level));
+
+    int dx[] = {-1,1,0,0};
+    int dy[] = {0,0,-1,1};
+
+    /*for(int i=0; i<4; i++)
+    {
+        {u.first+ dx[i],u.second+dy[i]}
+    }*/
+
+    level[s.first][s.second] = 0;
+    queue<pair<int,int>>q;
+
+    q.push(s);
+
+    while(!q.empty())
+    {
+        pair<int,int>u;
+        u = q.front();
+        q.pop();
+
+        for(int k=0; k<4;k++)
+        {
+            pair<int,int>v;
+            v={u.first+dx[k],u.second+dy[k]};
+
+            if(invalid(v.first,v.second) && level[v.first][v.second] == -1)
+            {
+                level[v.first][v.second] = level[u.first][u.second]+1;
+                q.push(v);
+            }
+        }
+    }
+
+    for(int i=0; i<n; i++)
+    {
+        for(int j=0; j<m; j++)
+        {
+            cout<<level[i][j]<<" ";
+        }
+         cout<<endl;
+    }
+
+    cout<<level[d.first][d.second]<<endl;
+
+
+}
+
+-------------DFS-------------------------
+
+  9 8
+  1 3
+  1 2
+  2 4
+  2 5
+  5 6
+  3 7
+  3 8
+  8 9
+  1
+
+#include<bits/stdc++.h>
+using namespace std;
+vector<int>graph[1000];
+int visit[1000]= {0};
+int n,e,s;
+int dfs(int u)
+{
+    int i,v;
+    visit[u]=1;
+    cout<<u<<" ";
+    for(i=0; i<graph[u].size(); i++)
+    {
+        v=graph[u][i];
+        if(visit[v]==0)
+        {
+            dfs(v);
+        }
+    }
+}
+int main()
+{
+    scanf("%d%d",&n,&e);
+    int u,v;
+    for(int i=1; i<=e; i++)
+    {
+        cin>>u>>v; //undirected graph
+        graph[u].push_back(v);
+        graph[v].push_back(u); //// no use if directed
+    }
+    for(int i=1; i<=n; i++)
+    {
+        cout<<i<<"->";
+        for(int j=0; j<graph[i].size(); j++)
+            cout<<graph[i][j]<<" ";
+        cout<<endl;
+    }
+    cin>>s;
+    dfs(s);
+}
+
+------------DFS Cycle------------------------
+  9 9
+  1 2
+  1 3
+  2 4
+  2 5
+  5 6
+  3 7
+  3 8
+  8 9
+  3 5
+
+
+
+
+-------------Topological sort DFS---------------
+  9 8
+  1 3
+  1 2
+  2 4
+  2 5
+  5 6
+  3 7
+  3 8
+  8 9
+
+#include<bits/stdc++.h>
+using namespace std;
+
+vector<vector<int>>adj;
+vector<int>visited;
+vector<int>st,en;
+
+int timee = 1;
+
+void dfs(int s)
+{
+    visited[s] = 1;
+    cout<<s<<" ";
+    st[s] = timee++;
+
+    sort(adj[s].begin(),adj[s].end());
+
+    for(int i=0; i<adj[s].size(); i++)
+    {
+        int v = adj[s][i];
+
+        if(!visited[v])
+        {
+            dfs(v);
+        }
+    }
+    en[s] = timee++;
+}
+
+
+int main()
+{
+    int n,m;
+    cin>>n>>m;
+
+    adj = vector<vector<int>>(n+1);
+    visited = vector<int>(n+1,0);
+
+    st = vector<int>(n+1,0);
+    en = vector<int>(n+1,0);
+
+    for(int i=0; i<m; i++)
+    {
+        int u,v;
+        cin>>u>>v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    dfs(1);
+}
+
+
+
+-------------priority queue--------------------
+
+#include<bits/stdc++.h>
+using namespace std;
+
+struct edge{
+int n,dis;
+edge(int nn, int dd)
+{
+    n = nn;
+    dis = dd;
+}
+
+  bool operator<(const edge &e)const
+  {
+      if(dis>e.dis)
+        return true;
+      else
+        return false;
+  }
+
+};
+
+int main()
+{
+    priority_queue<edge>pq;
+
+    pq.push(edge(5,21));
+    pq.push(edge(6,14));
+    pq.push(edge(4,7));
+
+    while(!pq.empty())
+    {
+        cout<<pq.top().n<<" ";
+        cout<<pq.top().dis<<endl;
+        pq.pop();
+    }
+
+
+    return 0;
+}
+
+---------------MST----------------
+  6 9
+  5 4 9
+  1 4 1
+  5 1 4
+  4 3 5
+  4 2 3
+  1 2 2
+  3 2 3
+  3 6 8
+  2 6 7
+
+#include<bits/stdc++.h>
+using namespace std;
+const int N = 510;
+const int INF = 1e9 +10;
+
+int parent[N],sz[N];
+
+void make(int v)
+{
+    parent[v] = v;
+    sz[v] = 1;
+}
+
+int find (int v)
+{
+    if(parent[v] == v)
+        return parent[v];
+    return parent[v] = find(parent[v]);
+}
+
+void Union(int a, int b)
+{
+    a = find(a);
+    b = find(b);
+
+    if(a != b)
+    {
+        if(sz[a] < sz[b])
+             swap(a,b);
+        parent[b] = a;
+        sz[a] += sz[b];
+    }
+}
+
+
+int main()
+{
+    int n,m;
+    cin>>n>>m;
+
+    vector<pair<int,pair<int,int>>>edges;
+
+    for(int i=0; i<m; ++i)
+    {
+        int u,v,wt;
+        cin>>u>>v>>wt;
+
+        edges.push_back({wt,{u,v}});
+    }
+    sort(edges.begin(),edges.end());
+
+    for(int i=1;i<=n; ++i)
+        make(i);
+
+    int total_cost = 0;
+
+    for(auto &edge : edges)
+    {
+        int wt = edge.first;
+        int u = edge.second.first;
+        int v = edge.second.second;
+
+        if(find(u) == find(v))
+            continue;
+        Union(u,v);
+        total_cost += wt;
+        cout<<u<<" "<<v<<endl;
+    }
+    cout<<total_cost<<endl;
+}
+
+-------------Kruskal MST-----------------
+
+5 7
+1 2 1
+1 3 7
+1 4 10
+1 5 5
+2 3 3
+3 4 4
+4 5 2
+
+#include <iostream>
+#include <algorithm>
+using namespace std;
+const int MAX = 1e4 + 5;
+int id[MAX], nodes, edges;
+pair <long long, pair<int, int> > p[MAX];
+void init()
+{
+    for(int i = 0; i < MAX; ++i)
+        id[i] = i;
+}
+int root(int x)
+{
+    while(id[x] != x)
+    {
+        id[x] = id[id[x]];
+        x = id[x];
+    }
+    return x;
+}
+void union1(int x, int y)
+{
+    int p = root(x);
+    int q = root(y);
+    id[p] = id[q];
+}
+long long kruskal(pair<long long, pair<int, int> > p[])
+{
+    int x, y;
+    long long cost, minimumCost = 0;
+    for(int i = 0; i < edges; ++i)
+    {
+        x = p[i].second.first;
+        y = p[i].second.second;
+        cost = p[i].first;
+        if(root(x) != root(y))
+        {
+            minimumCost += cost;
+            union1(x, y);
+        }
+    }
+    return minimumCost;
+}
+int main()
+{
+    int x, y;
+    long long weight, cost, minimumCost;
+    init();
+    cout <<"Enter Nodes and edges: ";
+    cin >> nodes >> edges;
+    for(int i = 0; i < edges; ++i)
+    {
+        cout<<"Enter the value of X, Y and edges: ";
+        cin >> x >> y >> weight;
+        p[i] = make_pair(weight, make_pair(x, y));
+    }
+    sort(p, p + edges);
+    minimumCost = kruskal(p);
+    cout <<"Minimum cost is "<< minimumCost << endl;
+    return 0;
+}
+
+-----------------N Queen--------------------
+#include<iostream>
+using namespace std;
+int grid[10][10];
+//print the solution
+void print(int n)
+{
+    for (int i = 0; i <= n-1; i++)
+    {
+        for (int j = 0; j <= n-1; j++)
+        {
+
+            cout <<grid[i][j]<< " ";
+
+        }
+        cout<<endl;
+    }
+    cout<<endl;
+    cout<<endl;
+}
+//function for check the position is safe or not
+//row is indicates the queen no. and col represents the possible positions
+bool isSafe(int col, int row, int n)
+{
+    //check for same column
+    for (int i = 0; i < row; i++)
+    {
+        if (grid[i][col])
+        {
+            return false;
+        }
+    }
+    //check for upper left diagonal
+    for (int i = row,j = col; i >= 0 && j >= 0; i--,j--)
+    {
+        if (grid[i][j])
+        {
+            return false;
+        }
+    }
+    //check for upper right diagonal
+    for (int i = row, j = col; i >= 0 && j < n; j++, i--)
+    {
+        if (grid[i][j])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+//function to find the position for each queen
+//row is indicates the queen no. and col represents the possible positions
+bool solve (int n, int row)
+{
+    if (n == row)
+    {
+        print(n);
+        return true;
+    }
+    //variable res is use for possible backtracking
+    bool res = false;
+    for (int i = 0; i <=n-1; i++)
+    {
+        if (isSafe(i, row, n))
+        {
+            grid[row][i] = 1;
+            //recursive call solve(n, row+1) for next queen (row+1)
+            res = solve(n, row+1) || res;//if res ==false then backtracking will occur
+            //by assigning the grid[row][i] = 0
+
+            grid[row][i] = 0;
+        }
+    }
+    return res;
+}
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int n;
+    cout<<"Enter the number of queen"<<endl;
+    cin >> n;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            grid[i][j] = 0;
+        }
+    }
+    bool res = solve(n, 0);
+    if(res == false)
+    {
+        cout << -1 << endl; //if there is no possible solution
+    }
+    else
+    {
+        cout << endl;
+    }
+    return 0;
+}
+
+
